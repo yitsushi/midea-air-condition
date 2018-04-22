@@ -46,12 +46,10 @@ module MideaAirCondition
       response['list']
     end
 
-    private
-
     def appliance_transparent_send(appliance_id, data)
       response = api_request(
         'appliance/transparent/send',
-        order: encode(Security.transcode(data).join(',')),
+        order: encode(@security.transcode(data).join(',')),
         funId: '0000',
         applianceId: appliance_id
       )
@@ -59,6 +57,20 @@ module MideaAirCondition
       response = decode(response['reply']).split(',').map { |p| p.to_i & 0xff }
 
       response
+    end
+
+    def new_packet_builder
+      PacketBuilder.new(@security)
+    end
+
+    private
+
+    def encode(data)
+      @security.aes_encrypt(data, @security.data_key)
+    end
+
+    def decode(data)
+      @security.aes_decrypt(data, @security.data_key)
     end
 
     def api_request(endpoint, **args)

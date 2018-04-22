@@ -1,6 +1,8 @@
 module MideaAirCondition
   # Device representation (now only for status parsing)
   class Device
+    attr_reader :data
+
     def initialize(data)
       @data = data
       @pointer = 0x33

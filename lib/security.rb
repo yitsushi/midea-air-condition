@@ -49,7 +49,7 @@ module MideaAirCondition
         k = crc_value ^ m
         k -= 256 if k > 256
         k += 256 if k < 0
-        crc_value = CRC8_854_TABLE[k]
+        crc_value = @crc8_854_table[k]
       end
 
       crc_value

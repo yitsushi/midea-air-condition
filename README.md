@@ -1,4 +1,8 @@
+### CRC Table + base64
+
 I tried to generate the crc8 table, but I can't.
+The table itself is a very long one,
+so I packed base64 encoded it.
 
 At least this one is not working:
 
