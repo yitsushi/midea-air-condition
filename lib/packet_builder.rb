@@ -26,7 +26,8 @@ module MideaAirCondition
       @packet << 0x00
 
       # Add padding + update packet length
-      @packet += [0] * (47 - @command.length)
+      @packet += [0] * (44 - @command.length)
+      @packet += [0]
       @packet[0x04] = @packet.length
 
       p @packet
