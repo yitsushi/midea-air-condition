@@ -30,8 +30,6 @@ module MideaAirCondition
       @packet += [0]
       @packet[0x04] = @packet.length
 
-      p @packet
-
       @packet
     end
 
