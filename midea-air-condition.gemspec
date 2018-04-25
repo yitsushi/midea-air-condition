@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ::Gem::Requirement.new('>= 2.0')
 
-  s.files = Dir['CHANGELOG.md', 'LICENSE', 'README.md', 'lib/**/*.rb']
+  s.files = Dir['LICENSE', 'README.md', 'lib/**/*.rb']
   s.test_files = Dir['spec/**/*']
 
   s.require_path = 'lib'

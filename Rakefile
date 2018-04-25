@@ -44,7 +44,6 @@ namespace :doc do
     rd.rdoc_files.include(
       'README.md',
       'LICENSE',
-      "bin/**/*\.rb",
       "lib/**/*\.rb"
     )
     rd.options << '--line-numbers'
