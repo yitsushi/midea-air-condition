@@ -83,9 +83,21 @@ response = client.appliance_transparent_send(
 )
 device = MideaAirCondition::Device.new(response)
 puts "  Target temperature is #{device.temperature} celsius."
+
+# Set temperature to 23 celsius
+builder = client.new_packet_builder
+command = MideaAirCondition::Command::Set.new
+command.temperature 23
+builder.add_command(command)
+
+response = client.appliance_transparent_send(
+  target,
+  builder.finalize
+)
+
+device = MideaAirCondition::Device.new(response)
+puts "  Target temperature is #{device.temperature} celsius."
 ```
-
-
 
 ### CRC Table + base64
 
