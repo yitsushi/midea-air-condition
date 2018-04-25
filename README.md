@@ -1,7 +1,9 @@
-### How to use
+## How to use
 
 The API key is `3742e9e5842d4ad59c2db887e12449f9` if you extract
 it from their `.apk` package. But I'm not sure.
+
+### Example:
 
 ```
 require_relative 'lib/midea_air_condition'
@@ -99,7 +101,7 @@ device = MideaAirCondition::Device.new(response)
 puts "  Target temperature is #{device.temperature} celsius."
 ```
 
-### CRC Table + base64
+## CRC Table + base64
 
 I tried to generate the crc8 table, but I can't.
 The table itself is a very long one,
