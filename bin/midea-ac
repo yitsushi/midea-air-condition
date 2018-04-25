@@ -4,7 +4,7 @@ require 'thor'
 require 'yaml'
 require 'midea_air_condition'
 
-class InelsCLI < Thor
+class MideaCLI < Thor
   CONFIG_PATH = File.expand_path('~/.midea/config')
 
   desc 'configure', 'Configure client'
@@ -65,9 +65,13 @@ class InelsCLI < Thor
   no_commands do
     def credentials
       return @credentials if @credentials
-      env_variables = ['EMAIL', 'PASSWORD', 'APP_KEY']
+      env_variables = ['MIDEA_AC_EMAIL', 'MIDEA_AC_PASSWORD', 'MIDEA_AC_APP_KEY']
+      env_prefix = 'MIDEA_AC_'
       if env_variables.all? {|k| ENV.key? k}
-        @credentials = Hash[ENV.select{ |k, v| env_variables.include?(k) }.map { |k, v| [k.downcase, v] }]
+        @credentials = Hash[
+          ENV.select{ |k, v| env_variables.include?(k) }
+            .map { |k, v| [k.gsub(env_prefix, '').downcase, v] }
+        ]
       elsif File.file?(CONFIG_PATH)
         @credentials = YAML.load_file(CONFIG_PATH)
       else
@@ -133,4 +137,4 @@ class InelsCLI < Thor
   end
 end
 
-InelsCLI.start
+MideaCLI.start
