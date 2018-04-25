@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MideaAirCondition
   module Command
     # Request status of a device

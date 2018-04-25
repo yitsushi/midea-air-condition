@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'base64'
 
 module MideaAirCondition
@@ -48,7 +50,7 @@ module MideaAirCondition
       data.each do |m|
         k = crc_value ^ m
         k -= 256 if k > 256
-        k += 256 if k < 0
+        k += 256 if k.negative?
         crc_value = @crc8_854_table[k]
       end
 
@@ -60,6 +62,8 @@ module MideaAirCondition
       255 - sum_value % 256 + 1
     end
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def aes_decrypt(data, key)
       aes = OpenSSL::Cipher.new('aes128')
       aes.decrypt
@@ -102,7 +106,9 @@ module MideaAirCondition
         final += aes.update(b) + aes.final
       end
 
-      final.unpack('H*').first
+      final.unpack1('H*')
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
   end
 end

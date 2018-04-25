@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MideaAirCondition
   # This is where we build our packets
   class PacketBuilder

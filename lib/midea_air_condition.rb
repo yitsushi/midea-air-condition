@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'client'
 require_relative 'device'
 require_relative 'packet_builder'

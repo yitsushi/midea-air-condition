@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MideaAirCondition
   # Device representation (now only for status parsing)
   class Device

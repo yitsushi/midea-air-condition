@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.push File.expand_path('lib', __dir__)
 require_relative 'lib/version'
 
@@ -11,7 +13,7 @@ Gem::Specification.new do |s|
   s.homepage = ''
   s.license = 'MIT'
 
-  s.required_ruby_version = ::Gem::Requirement.new('>= 2.0')
+  s.required_ruby_version = ::Gem::Requirement.new('>= 2.4')
 
   s.files = Dir['LICENSE', 'README.md', 'lib/**/*.rb']
   s.test_files = Dir['spec/**/*']

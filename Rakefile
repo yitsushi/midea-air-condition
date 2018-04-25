@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rubygems/package_task'
 require 'rubygems/dependency_installer'
 require 'rdoc/task'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'digest/sha2'
 require 'json'
 require 'net/http'
@@ -6,10 +8,10 @@ require 'openssl'
 module MideaAirCondition
   # Client for Midea AC server
   class Client
-    SERVER_URL  = 'https://mapp.appsmb.com/v1'.freeze
+    SERVER_URL  = 'https://mapp.appsmb.com/v1'
     CLIENT_TYPE = 1                 # Android
     FORMAT      = 2                 # JSON
-    LANGUAGE    = 'en_US'.freeze
+    LANGUAGE    = 'en_US'
 
     attr_accessor :debug
 
