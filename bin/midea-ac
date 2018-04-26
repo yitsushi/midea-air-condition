@@ -1,58 +1,63 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'thor'
 require 'yaml'
 require 'midea_air_condition'
 
+# Command Line Interface
 class MideaCLI < Thor
   CONFIG_PATH = File.expand_path('~/.midea/config')
 
   desc 'configure', 'Configure client'
   def configure
     credentials = {}
-    credentials['email'] = ask("Email:")
-    credentials['password'] = ask("Password:")
-    credentials['app_key'] = ask("App key:")
+    credentials['email'] = ask('Email:')
+    credentials['password'] = ask('Password:')
+    credentials['app_key'] = ask('App key:')
     config_dir = File.dirname(CONFIG_PATH)
     Dir.mkdir(config_dir) unless Dir.exist?(config_dir)
     File.write(CONFIG_PATH, credentials.to_yaml)
   end
 
   desc 'list', 'List devices'
-  def list 
+  def list
     devices = client.appliance_list
     head = [
       { name: 'ID',     id: 'id'           },
       { name: 'Name',   id: 'name'         },
       { name: 'Type',   id: 'type'         },
       { name: 'Online', id: 'onlineStatus' },
-      { name: 'Active', id: 'activeStatus' },
+      { name: 'Active', id: 'activeStatus' }
     ]
     print_table(devices, head)
   end
 
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength
   desc 'get ID', 'Gets device\'s information'
-  def get id
+  def get(id)
     command = MideaAirCondition::Command::RequestStatus.new
     device = send_command(id, command)
-    puts "Device is turned #{(device.power_status ? 'on' : 'off')}."
+    puts "Device is turned #{print_on_off(device.power_status)}."
     puts "Target temperature: #{device.temperature} celsius"
     puts "Indoor temperature: #{device.indoor_temperature} celsius"
     puts "Outdoor temperature: #{device.outdoor_temperature} celsius"
     puts "Mode: #{device.mode_human}"
     puts "Fan speed: #{device.fan_speed}"
-    puts "TimerOn is #{(device.on_timer[:status] ? '' : 'not')} active."
+    puts "TimerOn is #{print_not(device.on_timer[:status])} active."
     puts "  at:  #{device.on_timer_human}" if device.on_timer[:status]
-    puts "TimerOff is #{(device.off_timer[:status] ? '' : 'not')} active."
+    puts "TimerOff is #{print_not(device.off_timer[:status])} active."
     puts "  at: #{device.off_timer_human}" if device.off_timer[:status]
-    puts "Eco mode is #{(device.eco ? 'on' : 'off')}."
+    puts "Eco mode is #{print_on_off(device.eco)}."
   end
+  # rubocop:enable Metrics/MethodLength
 
   desc 'set ID', 'Sets device\'s power, temperature and fan speed'
-  method_option :power, required: false, type: :string, aliases: "-p", desc: "Power"
-  method_option :target_temperature, required: false, type: :numeric, aliases: "-t", desc: "Target temperature"
-  method_option :fan_speed, required: false, type: :numeric, aliases: "-f", desc: "Fan speed"
-  def set id
+  method_option :power, required: false, type: :string, aliases: '-p', desc: 'Power'
+  method_option :target_temperature, required: false, type: :numeric, aliases: '-t', desc: 'Target temperature'
+  method_option :fan_speed, required: false, type: :numeric, aliases: '-f', desc: 'Fan speed'
+  def set(id)
     command = MideaAirCondition::Command::Set.new
     command.turn_off if options[:power] == 'off'
     command.turn_on if options[:power] == 'on'
@@ -60,23 +65,34 @@ class MideaCLI < Thor
     command.fan_speed(options[:fan_speed]) if options[:fan_speed]
     send_command(id, command)
   end
+  # rubocop:enable Metrics/AbcSize
 
-
+  # rubocop:disable Metrics/BlockLength
   no_commands do
     def credentials
       return @credentials if @credentials
-      env_variables = ['MIDEA_AC_EMAIL', 'MIDEA_AC_PASSWORD', 'MIDEA_AC_APP_KEY']
-      env_prefix = 'MIDEA_AC_'
-      if env_variables.all? {|k| ENV.key? k}
-        @credentials = Hash[
-          ENV.select{ |k, v| env_variables.include?(k) }
-            .map { |k, v| [k.gsub(env_prefix, '').downcase, v] }
-        ]
-      elsif File.file?(CONFIG_PATH)
-        @credentials = YAML.load_file(CONFIG_PATH)
+      if (@credentials = credentials_from_env)
+        @credentials
+      elsif (@credentials = credentials_from_yaml)
+        @credentials
       else
         raise Thor::Error, 'No credentials found'
       end
+    end
+
+    def credentials_from_env
+      env_variables = %w[MIDEA_AC_EMAIL MIDEA_AC_PASSWORD MIDEA_AC_APP_KEY]
+      env_prefix = 'MIDEA_AC_'
+      return nil unless env_variables.all? { |k| ENV.key? k }
+      Hash[
+        ENV.select { |k, _| env_variables.include?(k) }
+           .map { |k, v| [k.gsub(env_prefix, '').downcase, v] }
+      ]
+    end
+
+    def credentials_from_yaml
+      return nil unless File.file?(CONFIG_PATH)
+      YAML.load_file(CONFIG_PATH)
     end
 
     def client
@@ -90,51 +106,57 @@ class MideaCLI < Thor
       @client
     end
 
-    def send_command id, command
+    def send_command(id, command)
       builder = client.new_packet_builder
       builder.add_command(command)
-      begin 
-        response = client.appliance_transparent_send(
-          id,
-          builder.finalize
-        )
+      begin
+        response = client.appliance_transparent_send(id, builder.finalize)
       rescue RuntimeError => e
-        if e.message == 'the appliance is off line.'
-          raise Thor::Error, 'The device is offline.'
-        else 
-          raise e
-        end
+        raise Thor::Error, 'The device is offline.' if e.message == 'the appliance is off line.'
+        raise e
       end
-  
+
       MideaAirCondition::Device.new(response)
     end
 
+    def print_on_off(value)
+      value ? 'on' : 'off'
+    end
+
+    def print_not(value)
+      value ? '' : 'not'
+    end
+
     def print_table(values, head)
-      head.each do |title|
-        title[:lenght] = (values.map{|value| value[title[:id]].to_s.length} + [title[:name].length]).max
-      end
+      calculate_table_width!(values, head)
       print_line(head)
       print_head(head)
       print_line(head)
-      values.each{|row| print_row(head, row)}
+      values.each { |row| print_row(head, row) }
       print_line(head)
-      
+    end
+
+    def calculate_table_width!(values, head)
+      head.each do |title|
+        title[:lenght] = (values.map { |value| value[title[:id]].to_s.length } + [title[:name].length]).max
+      end
     end
 
     def print_line(head)
-      puts '-' * (head.map{|e| e[:lenght] + 3}.reduce(&:+) + 1)
+      puts '-' * (head.map { |e| e[:lenght] + 3 }.reduce(&:+) + 1)
     end
 
     def print_head(head)
-      columns = head.map{|e| e[:name].ljust(e[:lenght], ' ')}
+      columns = head.map { |e| e[:name].ljust(e[:lenght], ' ') }
       puts '| ' + columns.join(' | ') + ' |'
     end
 
     def print_row(head, row)
-      columns = head.map{|e| row[e[:id]].to_s.ljust(e[:lenght], ' ')}
+      columns = head.map { |e| row[e[:id]].to_s.ljust(e[:lenght], ' ') }
       puts '| ' + columns.join(' | ') + ' |'
     end
   end
+  # rubocop:enable Metrics/BlockLength
 end
 
 MideaCLI.start

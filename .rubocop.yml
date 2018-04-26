@@ -4,3 +4,7 @@ AllCops:
   Exclude:
     - 'pkg/**/*'
     - 'vendor/**/*'
+Metrics/ClassLength:
+  Max: 150
+Metrics/LineLength:
+  Max: 120
