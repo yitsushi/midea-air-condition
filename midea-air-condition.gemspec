@@ -16,12 +16,14 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ::Gem::Requirement.new('>= 2.4')
 
   s.files = Dir['LICENSE', 'README.md', 'lib/**/*.rb']
+  s.executables << 'midea-ac'
   s.test_files = Dir['spec/**/*']
 
   s.require_path = 'lib'
 
   s.add_dependency 'json', '~> 2.1.0'
   s.add_dependency 'openssl', '~> 2.0.3'
+  s.add_dependency 'thor', '~> 0.20.0'
 
   s.add_development_dependency 'rake', '>= 12.0'
   s.add_development_dependency 'rdoc', '>= 5.1'
