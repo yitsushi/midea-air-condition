@@ -71,6 +71,7 @@ class MideaCLI < Thor
   no_commands do
     def credentials
       return @credentials if @credentials
+
       if (@credentials = credentials_from_env)
         @credentials
       elsif (@credentials = credentials_from_yaml)
@@ -84,6 +85,7 @@ class MideaCLI < Thor
       env_variables = %w[MIDEA_AC_EMAIL MIDEA_AC_PASSWORD MIDEA_AC_APP_KEY]
       env_prefix = 'MIDEA_AC_'
       return nil unless env_variables.all? { |k| ENV.key? k }
+
       Hash[
         ENV.select { |k, _| env_variables.include?(k) }
            .map { |k, v| [k.gsub(env_prefix, '').downcase, v] }
@@ -92,11 +94,13 @@ class MideaCLI < Thor
 
     def credentials_from_yaml
       return nil unless File.file?(CONFIG_PATH)
+
       YAML.load_file(CONFIG_PATH)
     end
 
     def client
       return @client if @client
+
       @client = MideaAirCondition::Client.new(
         credentials['email'],
         credentials['password'],
@@ -113,6 +117,7 @@ class MideaCLI < Thor
         response = client.appliance_transparent_send(id, builder.finalize)
       rescue RuntimeError => e
         raise Thor::Error, 'The device is offline.' if e.message == 'the appliance is off line.'
+
         raise e
       end
 

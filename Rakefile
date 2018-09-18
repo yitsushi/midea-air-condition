@@ -30,6 +30,7 @@ namespace :dependencies do
       installer.installation_satisfies_dependency?(dp)
     end
     next if unsatisfied_dep.empty?
+
     unsatisfied_dep.each do |dp|
       Gem::DependencyInstaller.new(
         user_install: ENV['RUBY_ENV'] == 'citest'

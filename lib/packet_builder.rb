@@ -19,6 +19,7 @@ module MideaAirCondition
 
     def add_command(command)
       raise Exception, 'Invalid argument' if command.is_a?(Command)
+
       @command += command.finalize(@security)
     end
 
