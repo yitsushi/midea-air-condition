@@ -106,7 +106,8 @@ module MideaAirCondition
         final += aes.update(b) + aes.final
       end
 
-      final.unpack('H*').first
+      unpacked = final.unpack('H*')
+      unpacked.first
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
