@@ -3,6 +3,37 @@
 The API key is `3742e9e5842d4ad59c2db887e12449f9` if you extract
 it from their `.apk` package. But I'm not sure.
 
+### Installation
+
+    gem install midea-air-condition
+
+### CLI
+
+#### Configure
+
+Before you can use the client you have to configure it. It will ask for email, password and app key. The configuration will be saved in `~/.midea/config`
+
+    midea-ac configure
+
+#### List devices
+
+You can list all the devices connected to the account
+
+    midea-ac list
+
+#### Get device
+
+You can get the status of a device
+
+    midea-ac get DEVICE_ID
+
+#### Set device
+
+You can Set the power temperature and fan speed of a device
+
+    midea-ac set DEVICE_ID --power=[on|off] --target-temperature=TARGET_TEMPERATURE --fan-speed FAN_SPEED
+
+
 ### Example:
 
 ```
