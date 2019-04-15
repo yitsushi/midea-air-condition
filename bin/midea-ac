@@ -58,13 +58,18 @@ class MideaCLI < Thor
   desc 'set ID', 'Sets device\'s power, temperature and fan speed'
   method_option :power, required: false, type: :string, aliases: '-p', desc: 'Power'
   method_option :target_temperature, required: false, type: :numeric, aliases: '-t', desc: 'Target temperature'
+  method_option :mode, required: false,
+                       default: 1,
+                       type: :numeric,
+                       aliases: '-m',
+                       desc: 'Mode [1: auto; 2: cool; 3: dry; 4: heat, 5: fan]'
   method_option :fan_speed, required: false, type: :numeric, aliases: '-f', desc: 'Fan speed'
   method_option :unit, required: false, default: 'C', type: :string, aliases: '-u', desc: 'Temperature unit'
   def set(id)
     command = MideaAirCondition::Command::Set.new
     command.turn_off if options[:power] == 'off'
     command.turn_on if options[:power] == 'on'
-    command.temperature(options[:target_temperature]) if options[:target_temperature]
+    command.temperature(options[:target_temperature], options[:mode]) if options[:target_temperature]
     command.fan_speed(options[:fan_speed]) if options[:fan_speed]
     command.unit(options[:unit])
     send_command(id, command)

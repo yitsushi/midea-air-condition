@@ -12,7 +12,7 @@ module MideaAirCondition
         @data[0x0b] = 0x42
       end
 
-      def temperature(value, mode: 2)
+      def temperature(value, mode: 1)
         c = ((mode << 5) & 0xe0) | (value & 0xf) | ((value << 4) & 0x10)
         @data[0x0c] = c
       end
