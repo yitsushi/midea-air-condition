@@ -66,7 +66,7 @@ class MideaCLI < Thor
     command.turn_on if options[:power] == 'on'
     command.temperature(options[:target_temperature]) if options[:target_temperature]
     command.fan_speed(options[:fan_speed]) if options[:fan_speed]
-    command.unit('F') if options[:unit] == 'F'
+    command.unit(options[:unit])
     send_command(id, command)
   end
   # rubocop:enable Metrics/AbcSize
