@@ -1,3 +1,14 @@
+**Project state: SUSPENDED**
+
+Check these repos:
+ - https://github.com/andersonshatch/midea-ac-py
+ - https://github.com/NeoAcheron/midea-ac-py
+
+As I know @andersonshatch has the latest version and @NeoAcheron does not have
+access to Midea devices anymore.
+
+---
+
 ## How to use
 
 The API key is `3742e9e5842d4ad59c2db887e12449f9` if you extract
