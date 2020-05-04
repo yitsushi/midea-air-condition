@@ -18,6 +18,15 @@ module MideaAirCondition
       (@data[@pointer + 1] & 0xf) + 16
     end
 
+    def temperature_dot
+      (@data[@pointer + 1] & 0x10) >> 1
+    end
+
+    def temperature_unit
+      options = %w[C F]
+      options[(@data[@pointer + 9] & 0x4) >> 2]
+    end
+
     def mode
       (@data[@pointer + 1] & 0xe0) >> 5
     end
